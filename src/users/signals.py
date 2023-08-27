@@ -8,11 +8,18 @@ from .models import Profile, Location
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        Profile.objects.create(users=instance)
+        Profile.objects.create(user=instance)
+
 
 @receiver(post_save, sender=Profile)
-def create_Profile_location(sender, instance, created, **kwargs):
+def create_profile_location(sender, instance, created, **kwrags):
     if created:
-        Location.objects.create(profile=instance)
+        profile_location = Location.objects.create()
         instance.location = profile_location
         instance.save()
+
+
+@receiver(post_delete, sender=Profile)
+def delete_profile_location(sender, instance, *args, **kwargs):
+    if instance.location:
+        instance.location.delete()
